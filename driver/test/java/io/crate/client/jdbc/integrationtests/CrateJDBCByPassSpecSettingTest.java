@@ -54,7 +54,7 @@ public class CrateJDBCByPassSpecSettingTest extends CrateJDBCIntegrationTest {
     }
 
     @Test
-    public void tesCommitStrictFalse() throws SQLException {
+    public void testCommitStrictFalse() throws SQLException {
         Connection connection = DriverManager.getConnection(connectionString);
         connection.commit();
         assertThat(connection.getAutoCommit(), is(true));
@@ -138,5 +138,21 @@ public class CrateJDBCByPassSpecSettingTest extends CrateJDBCIntegrationTest {
             expectedException.expectMessage("Rollback is not supported.");
             connection.rollback();
         }
+    }
+
+    @Test
+    public void testSupportTransactionsTrue() throws SQLException {
+        Connection connection = DriverManager.getConnection(connectionString);
+        DatabaseMetaData metadata = connection.getMetaData();
+        assertThat(metadata.supportsTransactions(), is (true));
+        connection.close();
+    }
+
+    @Test
+    public void testSupportTransactionsStrictFalse() throws SQLException {
+        Connection connection = DriverManager.getConnection(connectionString, strictProperties);
+        DatabaseMetaData metadata = connection.getMetaData();
+        assertThat(metadata.supportsTransactions(), is (false));
+        connection.close();
     }
 }
